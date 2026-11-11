@@ -1,13 +1,11 @@
 $folders = @(
-  "app",
-  "prometheus",
-  "loki",
-  "kubernetes",
-  "alerting",
-  "scripts",
-  "evidence",
-  "grafana\dashboards",
-  "grafana\provisioning\datasources",
-  "grafana\provisioning\dashboards"
+    "prometheus",
+    "loki",
+    "kubernetes",
+    "alerting",
+    "evidence",
+    "grafana\dashboards",
+    "grafana\provisioning\datasources",
+    "grafana\provisioning\dashboards"
 )
 foreach ($f in $folders) { New-Item -ItemType File -Path "$f\.gitkeep" -Force | Out-Null }
