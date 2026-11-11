@@ -4,7 +4,7 @@ services:
     container_name: order-app
     restart: unless-stopped
     ports:
-      - "127.0.0.1:18000:8000"
+      - "18000:8000"
     networks:
       - obs-net
 
@@ -35,7 +35,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - "127.0.0.1:19090:9090"
+      - "19090:9090"
     networks:
       - obs-net
 
@@ -48,8 +48,7 @@ services:
       - ./loki/config.yml:/etc/loki/config.yml:ro
       - loki_data:/loki
     ports:
-      - "192.168.56.60:3100:3100"
-      - "127.0.0.1:3100:3100"
+      - "3100:3100"
     networks:
       - obs-net
 
@@ -58,7 +57,7 @@ services:
     container_name: mailpit
     restart: unless-stopped
     ports:
-      - "127.0.0.1:18025:8025"
+      - "18025:8025"
     networks:
       - obs-net
 
@@ -73,7 +72,7 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
-      - "127.0.0.1:13000:3000"
+      - "13000:3000"
     depends_on:
       - prometheus
       - loki
