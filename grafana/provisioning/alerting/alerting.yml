@@ -1,0 +1,105 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: ops-email-inbox
+    receivers:
+      - uid: ops_email_receiver
+        type: email
+        settings:
+          addresses: ${ALERT_RECIPIENT_EMAIL}
+          singleEmail: true
+        disableResolveMessage: false
+
+policies:
+  - orgId: 1
+    receiver: ops-email-inbox
+    group_by:
+      - alertname
+      - grafana_folder
+    group_wait: 5s
+    group_interval: 10s
+    repeat_interval: 1h
+
+groups:
+  - orgId: 1
+    name: order-api-availability
+    folder: Observability Alerts
+    interval: 10s
+    rules:
+      - uid: order_api_target_down
+        title: OrderAPITargetDown
+        condition: C
+        for: 20s
+        noDataState: Alerting
+        execErrState: Alerting
+        annotations:
+          summary: "Order HTTP API scrape target is DOWN"
+          description: "Prometheus job order_http_app has reported up == 0 for more than 20 seconds. Immediate investigation required."
+        labels:
+          severity: critical
+          service: order-app
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              expr: up{job="order_http_app"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              conditions:
+                - evaluator:
+                    params: []
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            datasourceUid: __expr__
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              refId: C
+              type: threshold
